@@ -1,6 +1,6 @@
 # EBS Encryption & gp2 → gp3 Migration
 
-Remediation of unencrypted EBS volumes and legacy gp2 storage across an AWS environment — covering encryption enablement, storage class upgrade to gp3, and cleanup of unattached volumes.
+Remediation of unencrypted EBS volumes and legacy gp2 storage across an AWS environment, covering encryption enablement, storage class upgrade to gp3, and cleanup of unattached volumes.
 
 ---
 
@@ -72,7 +72,7 @@ aws ec2 attach-volume \
 ## gp2 → gp3 Upgrade (No Downtime)
 
 ```bash
-# Modify volume type live — no downtime required
+# Modify volume type live, no downtime required
 aws ec2 modify-volume \
   --volume-id <volume-id> --volume-type gp3
 
