@@ -119,3 +119,9 @@ ebs-encryption-migration/
 - Bash
 
 > All volume IDs, instance IDs, and ARNs have been sanitized.
+
+
+## Architecture Diagram
+
+![EBS Encryption Migration Architecture](docs/diagrams/05_ebs-encryption-architecture.png)
+
