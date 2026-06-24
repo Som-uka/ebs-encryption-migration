@@ -120,6 +120,46 @@ ebs-encryption-migration/
 
 > All volume IDs, instance IDs, and ARNs have been sanitized.
 
+---
+
+## Execution Results: gp2 → gp3 Migration
+
+The gp2 to gp3 migration was executed live across the environment in a single session with zero downtime, as part of a broader cost optimisation effort.
+
+| Metric | Value |
+|---|---|
+| Volumes migrated (gp2 → gp3) | 26 |
+| Total storage migrated | 668 GB |
+| Migration method | Live `modify-volume`, no restart |
+| Production downtime | None |
+| Monthly storage saving | ~$13 |
+| Annual storage saving | ~$156 |
+
+Key points from execution:
+
+- All volumes were modified live using `modify-volume`. gp3 conversion does not require detaching the volume or restarting the instance, so there was no service interruption.
+- A 6-hour AWS cooldown applies between volume modifications, which was factored into the rollback plan.
+- Two orphaned, unattached volumes (250 GB combined) were snapshotted and deleted in the same effort, removing ongoing storage charges for resources no longer in use.
+
+### Orphaned Volume Cleanup
+
+```bash
+# Identify unattached (available) volumes
+aws ec2 describe-volumes \
+  --filters Name=status,Values=available \
+  --query 'Volumes[*].{ID:VolumeId,Size:Size,AZ:AvailabilityZone}' \
+  --output table
+
+# Snapshot before deletion (safety net)
+aws ec2 create-snapshot \
+  --volume-id <volume-id> \
+  --description "Pre-deletion snapshot of orphaned volume"
+
+# Delete once snapshot confirmed complete
+aws ec2 delete-volume --volume-id <volume-id>
+```
+
+---
 
 ## Architecture Diagram
 
